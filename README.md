@@ -8,9 +8,10 @@ Docker Image build from RHEL UBI base image
 
 1. Branch from `main`
 2. Make changes
-3. Commit and Push
-4. Create PR merging into `main`
-5. Get reviewed and approved
+3. Increment build number file value
+4. Commit and Push
+5. Create PR merging into `main`
+6. Get reviewed and approved
 
 ## Build new version of Presto
 
@@ -19,10 +20,11 @@ Docker Image build from RHEL UBI base image
 3. If it reports a new presto version number, then branch from `main` for that new version.
 4. Update `Dockerfile` : `ARG PRESTO_VERSION` setting it to the version reported.
 5. Execute `get_presto_version.sh` to make sure that the output matches the new presto version.
-6. Run a test build by executing `docker-build-dev.sh`
-7. If successful, then commit changes and push branch.
-8. Create a PR, this should execute a PR check script.
-9. If successful, get approval.
+6. Increment the value in `image_build_num.txt`
+7. Run a test build by executing `pr_check.sh`
+8. If successful, then commit changes and push branch.
+9. Create a PR, this should execute a PR check script.
+10. If successful, get approval and merge.
 
 # Utility Scripts
 
@@ -30,6 +32,7 @@ Docker Image build from RHEL UBI base image
 * `get_presto_version.sh` : Get the current presto version from the `Dockerfile`.
 * `get_latest_repo_release_tag.sh` : Get the latest release tag from the `prestosql/presto repo`.
 * `docker-build-dev.sh` : Executes a local test build of the docker image.
+* `get_image_tag.sh` : Return the image tag made from the hive version and the build number from `image_build_num.txt`
 
 # Integration Scripts
 
