@@ -20,8 +20,8 @@ RUN set -x; \
     && rm -rf /var/cache/yum/* \
     && yum install --setopt=skip_missing_names_on_install=False -y $INSTALL_PKGS \
     && yum clean all \
-    && rm -rf /var/cache/yum && \
-    alternatives --set python /usr/bin/python3
+    && rm -rf /var/cache/yum \
+    && alternatives --set python /usr/bin/python3
 
 # go get faq via static Linux binary approach
 RUN curl -sLo /usr/local/bin/faq \
@@ -34,10 +34,8 @@ RUN curl -sLo /usr/bin/tini \
     && chmod +x /usr/bin/tini
 
 # Presto dirs
-RUN mkdir -p $HOME && \
-    chown -R 1003:0 /opt/presto $JAVA_HOME/lib/security/cacerts && \
-    chmod -R 774 $JAVA_HOME/lib/security/cacerts && \
-    chmod -R 775 /opt/presto
+RUN mkdir -p $HOME \
+    && chmod -R 775 /opt/presto
 
 # Install presto server
 RUN curl -sLo ${HOME}/presto_server.tar.gz \
@@ -63,11 +61,14 @@ RUN yum install -y maven \
     && rm -rf /var/cache/yum
 
 # Java security config
-RUN touch $JAVA_HOME/lib/security/java.security && \
-    sed -i -e '/networkaddress.cache.ttl/d' \
-        -e '/networkaddress.cache.negative.ttl/d' \
-        $JAVA_HOME/lib/security/java.security && \
-    printf 'networkaddress.cache.ttl=0\nnetworkaddress.cache.negative.ttl=0\n' >> $JAVA_HOME/lib/security/java.security
+RUN touch $JAVA_HOME/lib/security/java.security \
+    && sed -i -e '/networkaddress.cache.ttl/d' \
+           -e '/networkaddress.cache.negative.ttl/d' \
+           $JAVA_HOME/lib/security/java.security \
+    && printf 'networkaddress.cache.ttl=0\nnetworkaddress.cache.negative.ttl=0\n' >> $JAVA_HOME/lib/security/java.security \
+    && chmod -R g+rwx $(readlink -f ${JAVA_HOME}) \
+             $(readlink -f ${JAVA_HOME}/lib/security) \
+             $(readlink -f ${JAVA_HOME}/lib/security/cacerts)
 
 
 USER 1003
