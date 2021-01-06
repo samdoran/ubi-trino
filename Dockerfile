@@ -35,8 +35,6 @@ RUN curl -sLo /usr/bin/tini \
 
 # Presto dirs
 RUN mkdir -p $HOME \
-    && chown -R 1003:0 /opt/presto $JAVA_HOME/lib/security/cacerts \
-    && chmod -R 774 $JAVA_HOME/lib/security/cacerts \
     && chmod -R 775 /opt/presto
 
 # Install presto server
