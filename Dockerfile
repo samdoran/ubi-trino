@@ -34,7 +34,7 @@ RUN cd / \
 FROM registry.access.redhat.com/ubi8/ubi
 
 RUN set -x; \
-    INSTALL_PKGS="java-1.8.0-openjdk java-1.8.0-openjdk-devel openssl less rsync" \
+    INSTALL_PKGS="java-11-openjdk java-11-openjdk-devel openssl less rsync" \
     && yum clean all \
     && rm -rf /var/cache/yum/* \
     && yum install --setopt=skip_missing_names_on_install=False -y $INSTALL_PKGS \
@@ -56,7 +56,7 @@ ENV TRINO_CLI=/opt/trino/trino-cli
 ENV PROMETHEUS_JMX_EXPORTER=/opt/jmx_exporter/jmx_exporter.jar
 ENV TERM=linux
 ENV HOME=/opt/trino
-ENV JAVA_HOME=/etc/alternatives/jre
+ENV JAVA_HOME=/etc/alternatives/jre_11_openjdk
 
 RUN mkdir -p ${TRINO_HOME}
 
@@ -66,6 +66,9 @@ COPY --from=build /build/jmx_prometheus_javaagent.jar ${PROMETHEUS_JMX_EXPORTER}
 
 # https://docs.oracle.com/javase/7/docs/technotes/guides/net/properties.html
 # Java caches dns results forever, don't cache dns results forever:
+RUN touch $JAVA_HOME/lib/security/java.security \
+    && chown 1003:0 $JAVA_HOME/lib/security/java.security \
+    && chmod g+rw $JAVA_HOME/lib/security/java.security
 RUN sed -i '/networkaddress.cache.ttl/d' $JAVA_HOME/lib/security/java.security
 RUN sed -i '/networkaddress.cache.negative.ttl/d' $JAVA_HOME/lib/security/java.security
 RUN echo 'networkaddress.cache.ttl=0' >> $JAVA_HOME/lib/security/java.security
@@ -74,8 +77,8 @@ RUN echo 'networkaddress.cache.negative.ttl=0' >> $JAVA_HOME/lib/security/java.s
 RUN ln $TRINO_CLI /usr/local/bin/trino-cli && \
     chmod 755 /usr/local/bin/trino-cli 
 
-RUN chown -R 1003:0 /opt/trino $JAVA_HOME/lib/security/cacerts && \
-    chmod -R 774 $JAVA_HOME/lib/security/cacerts && \
+RUN chown -R 1003:0 /opt/trino $(readlink -f ${JAVA_HOME}/lib/security/cacerts) && \
+    chmod -R 774 $(readlink -f ${JAVA_HOME}/lib/security/cacerts) && \
     chmod -R 775 /opt/trino && \
     ln -s /opt/trino /opt/presto && \
     ln -s /opt/trino/trino-server /opt/trino/presto-server
