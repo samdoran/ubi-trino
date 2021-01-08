@@ -34,7 +34,7 @@ RUN cd / \
 FROM registry.access.redhat.com/ubi8/ubi
 
 RUN set -x; \
-    INSTALL_PKGS="java-11-openjdk java-11-openjdk-devel openssl less rsync" \
+    INSTALL_PKGS="java-11-openjdk java-11-openjdk-devel openssl less rsync curl diffutils python3" \
     && yum clean all \
     && rm -rf /var/cache/yum/* \
     && yum install --setopt=skip_missing_names_on_install=False -y $INSTALL_PKGS \
