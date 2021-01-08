@@ -4,7 +4,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 IMAGE_REPO="quay.io"
 ORG="cloudservices"
-APP="ubi-presto"
+APP="ubi-trino"
 IMAGE="${IMAGE_REPO}/${ORG}/${APP}"
 IMAGE_TAG="latest"
 

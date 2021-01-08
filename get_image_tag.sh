@@ -11,4 +11,4 @@ else
     exit -1
 fi
 
-echo "$(${SCRIPT_DIR}/get_presto_version.sh)-${BUILD_NUM}"
+echo "$(${SCRIPT_DIR}/get_trino_version.sh)-${BUILD_NUM}"
