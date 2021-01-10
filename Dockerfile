@@ -1,6 +1,6 @@
 FROM quay.io/centos/centos:centos7 as build
 
-ARG TRINO_VERSION=351
+ARG TRINO_VERSION=348
 ENV TRINO_RELEASE_TAG=${TRINO_VERSION}
 ENV TRINO_RELEASE_TAG_RE=".*refs/tags/${TRINO_RELEASE_TAG}\$"
 
@@ -21,9 +21,20 @@ RUN git clone -q \
         https://github.com/trinodb/trino.git \
         /build
 
+# ======================================
+# ======================================
+# AS OF RELEASE 351, Presto has been rebranded to Trino.
+# The project changed a bit. To build trino, use this build command instead.
+#RUN cd /build \
+#    && JAVA_HOME=/etc/alternatives/jre_11_openjdk ./mvnw clean package -DskipTests -pl '!docs'
+# ======================================
+# ======================================
 # build presto
 RUN cd /build \
-    && JAVA_HOME=/etc/alternatives/jre_11_openjdk ./mvnw clean package -DskipTests -pl '!docs'
+    && JAVA_HOME=/etc/alternatives/jre_11_openjdk ./mvnw clean package -DskipTests -pl '!presto-docs'
+# ======================================
+# ======================================
+
 # Install prometheus-jmx agent
 RUN cd / \
     && mvn org.apache.maven.plugins:maven-dependency-plugin:2.10:get \
@@ -53,24 +64,52 @@ ENV TINI_VERSION v0.18.0
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /usr/bin/tini
 RUN chmod +x /usr/bin/tini
 
-RUN mkdir -p /opt/presto
-
+# ======================================
+# ======================================
+# AS OF RELEASE 351, Presto has been rebranded to Trino.
+# The project changed a bit. To use trino, use these vars instead
+#ENV _APP_NAME=presto
+## Keep this in sync with ARG TRINO_VERSION above
+#ENV TRINO_VERSION=348
+#ENV TRINO_HOME=/opt/trino/trino-server
+#ENV TRINO_CLI=/opt/trino/trino-cli
+#ENV _APP_HOME=${TRINO_HOME}
+#ENV _APP_CLI=${TRINO_CLI}
+# ======================================
+# ======================================
+ENV _APP_NAME=presto
 # Keep this in sync with ARG TRINO_VERSION above
-ENV TRINO_VERSION=351
-ENV TRINO_HOME=/opt/trino/trino-server
-ENV TRINO_CLI=/opt/trino/trino-cli
+ENV PRESTO_VERSION=348
+ENV PRESTO_HOME=/opt/presto/presto-server
+ENV PRESTO_CLI=/opt/presto/presto-cli
+ENV _APP_HOME=${PRESTO_HOME}
+ENV _APP_CLI=${PRESTO_CLI}
+# ======================================
+# ======================================
+
 # Note: podman was having difficulties evaluating the TRINO_VERSION
 # environment variables: https://github.com/containers/libpod/issues/4878
 ENV PROMETHEUS_JMX_EXPORTER=/opt/jmx_exporter/jmx_exporter.jar
 ENV TERM=linux
-ENV HOME=/opt/trino
+ENV HOME=/opt/${_APP_NAME}
 ENV JAVA_HOME=/etc/alternatives/jre_11_openjdk
 
-RUN mkdir -p ${TRINO_HOME}
+RUN mkdir -p ${_APP_HOME}
 
-COPY --from=build /build/core/trino-server/target/trino-server-${TRINO_VERSION} ${TRINO_HOME}
-COPY --from=build /build/client/trino-cli/target/trino-cli-${TRINO_VERSION}-executable.jar ${TRINO_CLI}
+# ======================================
+# ======================================
+# AS OF RELEASE 351, Presto has been rebranded to Trino.
+# The project changed a bit. To use trino, use these copy commands instead
+#COPY --from=build /build/core/trino-server/target/trino-server-${TRINO_VERSION} ${TRINO_HOME}
+#COPY --from=build /build/client/trino-cli/target/trino-cli-${TRINO_VERSION}-executable.jar ${TRINO_CLI}
+#COPY --from=build /build/jmx_prometheus_javaagent.jar ${PROMETHEUS_JMX_EXPORTER}
+# ======================================
+# ======================================
+COPY --from=build /build/presto-server/target/presto-server-${PRESTO_VERSION} ${PRESTO_HOME}
+COPY --from=build /build/presto-cli/target/presto-cli-${PRESTO_VERSION}-executable.jar ${PRESTO_CLI}
 COPY --from=build /build/jmx_prometheus_javaagent.jar ${PROMETHEUS_JMX_EXPORTER}
+# ======================================
+# ======================================
 
 # https://docs.oracle.com/javase/7/docs/technotes/guides/net/properties.html
 # Java caches dns results forever, don't cache dns results forever:
@@ -82,18 +121,29 @@ RUN sed -i '/networkaddress.cache.negative.ttl/d' $JAVA_HOME/lib/security/java.s
 RUN echo 'networkaddress.cache.ttl=0' >> $JAVA_HOME/lib/security/java.security
 RUN echo 'networkaddress.cache.negative.ttl=0' >> $JAVA_HOME/lib/security/java.security
 
-RUN ln $TRINO_CLI /usr/local/bin/trino-cli && \
-    chmod 755 /usr/local/bin/trino-cli 
+RUN ln ${_APP_CLI} /usr/local/bin/${_APP_NAME}-cli && \
+    chmod 755 /usr/local/bin/${_APP_NAME}-cli 
 
-RUN chown -R 1003:0 /opt/trino $(readlink -f ${JAVA_HOME}/lib/security/cacerts) && \
+# ======================================
+# ======================================
+# AS OF RELEASE 351, Presto has been rebranded to Trino.
+# The project changed a bit. To use trino, use these commands instead
+#RUN chown -R 1003:0 ${HOME} $(readlink -f ${JAVA_HOME}/lib/security/cacerts) && \
+#    chmod -R 774 $(readlink -f ${JAVA_HOME}/lib/security/cacerts) && \
+#    chmod -R 775 ${HOME} && \
+#    ln -s ${HOME} /opt/presto && \
+#    ln -s ${TRINO_HOME} /opt/trino/presto-server
+# ======================================
+# ======================================
+RUN chown -R 1003:0 ${HOME} $(readlink -f ${JAVA_HOME}/lib/security/cacerts) && \
     chmod -R 774 $(readlink -f ${JAVA_HOME}/lib/security/cacerts) && \
-    chmod -R 775 /opt/trino && \
-    ln -s /opt/trino /opt/presto && \
-    ln -s /opt/trino/trino-server /opt/trino/presto-server
+    chmod -R 775 ${HOME} 
+# ======================================
+# ======================================
 
 USER 1003
 EXPOSE 8080
-WORKDIR $TRINO_HOME
+WORKDIR ${_APP_HOME}
 
 CMD ["tini", "--", "bin/launcher", "run"]
 
