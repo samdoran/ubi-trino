@@ -135,8 +135,8 @@ RUN ln ${_APP_CLI} /usr/local/bin/${_APP_NAME}-cli && \
 #    ln -s ${TRINO_HOME} /opt/trino/presto-server
 # ======================================
 # ======================================
-RUN chown -R 1003:0 ${HOME} $(readlink -f ${JAVA_HOME}/lib/security/cacerts) && \
-    chmod -R 774 $(readlink -f ${JAVA_HOME}/lib/security/cacerts) && \
+RUN chown -R 1003:0 ${HOME} /etc/passwd $(readlink -f ${JAVA_HOME}/lib/security/cacerts) && \
+    chmod -R 774 /etc/passwd $(readlink -f ${JAVA_HOME}/lib/security/cacerts) && \
     chmod -R 775 ${HOME} 
 # ======================================
 # ======================================
