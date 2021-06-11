@@ -309,12 +309,10 @@ objects:
   kind: ClowdApp
   metadata:
     name: presto
-    labels:
-      app: presto
   spec:
     envName: ${ENV_NAME}
     deployments:
-    - name: presto-coordinator
+    - name: coordinator
       minReplicas: ${{COORDINATOR_REPLICAS}}
       webServices:
         public:
@@ -457,7 +455,7 @@ objects:
             mountPath: /var/presto/logs
           - name: hadoop-config
             mountPath: /hadoop-config
-    - name: presto-worker
+    - name: worker
       minReplicas: ${{WORKER_REPLICAS}}
       webServices:
         public:
