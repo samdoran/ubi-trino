@@ -324,14 +324,14 @@ objects:
       podSpec:
         image: ${IMAGE}:${IMAGE_TAG}
         initContainers:
-          command:
-            - /presto-common/initialize_presto.sh
-          inheritEnv: true
+          - command:
+              - /presto-common/initialize_presto.sh
+            inheritEnv: true
         command:
           - /presto-common/entrypoint.sh
         args:
-            - /opt/presto/presto-server/bin/launcher
-            - run
+          - /opt/presto/presto-server/bin/launcher
+          - run
         env:
           - name: MY_NODE_ID
             valueFrom:
@@ -467,9 +467,9 @@ objects:
       podSpec:
         image: ${IMAGE}:${IMAGE_TAG}
         initContainers:
-          command:
-            - /presto-common/initialize_presto.sh
-          inheritEnv: true
+          - command:
+              - /presto-common/initialize_presto.sh
+            inheritEnv: true
         command:
           - /presto-common/entrypoint.sh
         args:
