@@ -351,18 +351,6 @@ objects:
               fieldRef:
                 apiVersion: v1
                 fieldPath: metadata.namespace
-          - name: MY_MEM_REQUEST
-            valueFrom:
-              resourceFieldRef:
-                containerName: presto
-                resource: requests.memory
-                divisor: '0'
-          - name: MY_MEM_LIMIT
-            valueFrom:
-              resourceFieldRef:
-                containerName: presto
-                resource: limits.memory
-                divisor: '0'
           - name: S3_BUCKET_NAME
             valueFrom:
               secretKeyRef:
@@ -494,18 +482,6 @@ objects:
               fieldRef:
                 apiVersion: v1
                 fieldPath: metadata.namespace
-          - name: MY_MEM_REQUEST
-            valueFrom:
-              resourceFieldRef:
-                containerName: presto
-                resource: requests.memory
-                divisor: '0'
-          - name: MY_MEM_LIMIT
-            valueFrom:
-              resourceFieldRef:
-                containerName: presto
-                resource: limits.memory
-                divisor: '0'
           - name: S3_BUCKET_NAME
             valueFrom:
               secretKeyRef:
