@@ -689,3 +689,5 @@ parameters:
   value: '12'
 - name: SHARED_DB_APP_NAME
   value: 'hccm'
+- name: ENV_NAME
+  required: false
