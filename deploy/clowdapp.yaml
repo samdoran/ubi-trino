@@ -601,8 +601,6 @@ objects:
           - name: hadoop-config
             mountPath: /hadoop-config
     database:
-      name: ${DATABASE_NAME}
-      version: ${{DATABASE_VERSION}}
       sharedDbAppName: ${SHARED_DB_APP_NAME}
     dependencies:
       - koku
@@ -683,10 +681,6 @@ parameters:
   name: QUERY_MAX_TOTAL_MEMORY_PER_NODE
   value: '2GB'
   required: true
-- name: DATABASE_NAME
-  value: koku
-- name: DATABASE_VERSION
-  value: '12'
 - name: SHARED_DB_APP_NAME
   value: 'hccm'
 - name: ENV_NAME
