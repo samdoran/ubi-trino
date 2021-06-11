@@ -24,6 +24,9 @@ objects:
         export DATABASE_USER=`jq -r '.database.username' ${ACG_CONFIG}`
         export DATABASE_PASSWORD=`jq -r '.database.password' ${ACG_CONFIG}`
         export DATABASE_NAME=`jq -r '.database.name' ${ACG_CONFIG}`
+        export AWS_ACCESS_KEY_ID=`jq -r '.objectStore.buckets[0].accessKey' ${ACG_CONFIG}`
+        export AWS_SECRET_ACCESS_KEY=`jq -r '.objectStore.buckets[0].secretKey' ${ACG_CONFIG}`
+        export S3_BUCKET_NAME=`jq -r '.objectStore.buckets[0].requestedName' ${ACG_CONFIG}`
         export DATABASE_SSLMODE=`jq -r '.database.sslMode' ${ACG_CONFIG}`
         if [[ $DATABASE_SSLMODE = "null" ]]; then
           unset DATABASE_SSLMODE
@@ -574,6 +577,8 @@ objects:
             mountPath: /presto-etc
           - name: hadoop-config
             mountPath: /hadoop-config
+    objectStore:
+    - ${S3_BUCKET_NAME}
     database:
       sharedDbAppName: ${SHARED_DB_APP_NAME}
     dependencies:
