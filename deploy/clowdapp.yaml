@@ -676,3 +676,5 @@ parameters:
   value: 'hccm'
 - name: ENV_NAME
   required: false
+- name: S3_BUCKET_NAME
+  value: 'hccm-s3'
