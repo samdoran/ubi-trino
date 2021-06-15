@@ -673,7 +673,7 @@ parameters:
   value: '2GB'
   required: true
 - name: SHARED_DB_APP_NAME
-  value: 'hccm'
+  value: 'koku'
 - name: ENV_NAME
   required: false
 - name: S3_BUCKET_NAME
