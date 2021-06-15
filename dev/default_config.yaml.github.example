@@ -17,4 +17,3 @@ apps:
       repo: redhatinsights/ubi-trino
       path: deploy/clowdapp.yaml
       ref: main
-      
