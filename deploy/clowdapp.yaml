@@ -334,21 +334,37 @@ objects:
     node.properties: |
       node.data-dir=/var/presto/data
       node.environment=production
-- kind: Secret
-  apiVersion: v1
+- apiVersion: v1
+  kind: ConfigMap
   metadata:
     name: presto-catalog-config
     labels:
       app: presto
   data:
-    blackhole.properties: Y29ubmVjdG9yLm5hbWU9YmxhY2tob2xlCg==
-    hive.properties: >-
-      Y29ubmVjdG9yLm5hbWU9aGl2ZS1oYWRvb3AyCmhpdmUuYWxsb3ctZHJvcC10YWJsZT10cnVlCmhpdmUuYWxsb3ctcmVuYW1lLXRhYmxlPXRydWUKaGl2ZS5zdG9yYWdlLWZvcm1hdD1QYXJxdWV0CmhpdmUuY29tcHJlc3Npb24tY29kZWM9U05BUFBZCmhpdmUuaGRmcy5hdXRoZW50aWNhdGlvbi50eXBlPU5PTkUKaGl2ZS5tZXRhc3RvcmUuYXV0aGVudGljYXRpb24udHlwZT1OT05FCmhpdmUuY29sbGVjdC1jb2x1bW4tc3RhdGlzdGljcy1vbi13cml0ZT10cnVlCmhpdmUubWV0YXN0b3JlLnVyaT10aHJpZnQ6Ly9oaXZlLW1ldGFzdG9yZTo5MDgzCmhpdmUuY29uZmlnLnJlc291cmNlcz0vb3B0L3ByZXN0by9wcmVzdG8tc2VydmVyL2V0Yy9oYWRvb3AvY29yZS1zaXRlLnhtbApoaXZlLnBhcnF1ZXQudXNlLWNvbHVtbi1uYW1lcz10cnVlCmhpdmUuczMuc3NlLmVuYWJsZWQ9dHJ1ZQpoaXZlLnMzLnNzbC5lbmFibGVkPXRydWUK
-    jmx.properties: Y29ubmVjdG9yLm5hbWU9am14Cg==
-    memory.properties: Y29ubmVjdG9yLm5hbWU9bWVtb3J5Cg==
-    tpcds.properties: Y29ubmVjdG9yLm5hbWU9dHBjZHMK
-    tpch.properties: Y29ubmVjdG9yLm5hbWU9dHBjaAo=
-  type: Opaque
+    hive.properties: |
+      connector.name=hive-hadoop2
+      hive.allow-drop-table=true
+      hive.allow-rename-table=true
+      hive.storage-format=Parquet
+      hive.compression-codec=SNAPPY
+      hive.hdfs.authentication.type=NONE
+      hive.metastore.authentication.type=NONE
+      hive.collect-column-statistics-on-write=true
+      hive.metastore.uri=thrift://hive-metastore:8000
+      hive.config.resources=/opt/presto/presto-server/etc/hadoop/core-site.xml
+      hive.parquet.use-column-names=true
+      hive.s3.sse.enabled=true
+      hive.s3.ssl.enabled=true
+    blackhole.propeties: |
+      connector.name=blackhole
+    jmx.properties: |
+      connector.name=jmx
+    memory.properties: |
+      connector.name=memory
+    tpcds.properties: |
+      connector.name=tpcds
+    tpch.properties: |
+      connector.name=tpch
 
 - apiVersion: cloud.redhat.com/v1alpha1
   kind: ClowdApp
@@ -439,8 +455,8 @@ objects:
               name: presto-common-config
               defaultMode: 509
           - name: presto-catalog-config
-            secret:
-              secretName: presto-catalog-config
+            configMap:
+              name: presto-catalog-config
               defaultMode: 420
           - name: presto-jmx-config
             configMap:
