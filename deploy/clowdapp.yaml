@@ -571,8 +571,8 @@ objects:
               name: presto-common-config
               defaultMode: 509
           - name: presto-catalog-config
-            secret:
-              secretName: presto-catalog-config
+            configMap:
+              name: presto-catalog-config
               defaultMode: 420
           - name: presto-jmx-config
             configMap:
