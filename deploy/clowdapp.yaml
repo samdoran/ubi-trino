@@ -355,15 +355,16 @@ objects:
       connector.name=hive-hadoop2
       hive.allow-drop-table=true
       hive.allow-rename-table=true
-      hive.storage-format=Parquet
+      hive.collect-column-statistics-on-write=true
       hive.compression-codec=SNAPPY
+      hive.config.resources=/opt/presto/presto-server/etc/hadoop/core-site.xml
       hive.hdfs.authentication.type=NONE
       hive.metastore.authentication.type=NONE
-      hive.collect-column-statistics-on-write=true
       hive.metastore.uri=thrift://hive-metastore:8000
-      hive.config.resources=/opt/presto/presto-server/etc/hadoop/core-site.xml
       hive.parquet.use-column-names=true
+      hive.s3.path-style-access=true      
       hive.s3.sse.enabled=true
+      hive.storage-format=Parquet
     blackhole.propeties: |
       connector.name=blackhole
     jmx.properties: |
