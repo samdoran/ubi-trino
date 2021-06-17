@@ -469,8 +469,8 @@ objects:
           - name: presto-logs
             emptyDir: {}
           - name: hadoop-config
-            secret:
-              secretName: hadoop-config
+            configMap:
+              name: hadoop-config
               defaultMode: 420
         volumeMounts:
           - name: presto-etc
@@ -585,8 +585,8 @@ objects:
           - name: presto-logs
             emptyDir: {}
           - name: hadoop-config
-            secret:
-              secretName: hadoop-config
+            configMap:
+              name: hadoop-config
               defaultMode: 420
         volumeMounts:
           - name: presto-etc
