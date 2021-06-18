@@ -55,6 +55,7 @@ RUN set -x; \
                    rsync \
                    curl \
                    diffutils \
+                   jq \
     && yum install -y python3 \
     && yum clean all \
     && rm -rf /var/cache/yum \
