@@ -161,6 +161,8 @@ objects:
       jmx.rmiserver.port=8081
       jmx.rmiregistry.port=8081
       query.max-length=10000000
+      web-ui.authentication.type=fixed
+      web-ui.user=presto
     jvm.config: >-
       -server
 
