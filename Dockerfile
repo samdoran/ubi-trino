@@ -126,6 +126,9 @@ RUN echo 'networkaddress.cache.negative.ttl=0' >> $JAVA_HOME/lib/security/java.s
 RUN echo 'presto soft nofile 131072' >> /etc/security/limits.conf
 RUN echo 'presto hard nofile 131072' >> /etc/security/limits.conf
 
+RUN echo 'presto soft nproc 131072' >> /etc/security/limits.d/90-nproc.conf
+RUN echo 'presto hard nproc 131072' >> /etc/security/limits.d/90-nproc.conf
+
 RUN ln ${_APP_CLI} /usr/local/bin/${_APP_NAME}-cli && \
     chmod 755 /usr/local/bin/${_APP_NAME}-cli
 
