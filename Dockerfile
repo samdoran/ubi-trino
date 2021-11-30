@@ -61,7 +61,7 @@ COPY --from=downloader /tmp/jmx_prometheus_javaagent-${PROMETHEUS_VERSION}.jar /
 COPY --from=downloader /tmp/trino-cli-${TRINO_VERSION}-executable.jar /usr/bin/trino
 COPY --from=downloader --chown=trino:trino /tmp/trino-server-${TRINO_VERSION} /usr/lib/trino
 COPY --chown=trino:trino default/etc $TRINO_HOME
-sdfsfsdfsdf
+
 # https://docs.oracle.com/javase/7/docs/technotes/guides/net/properties.html
 # Java caches dns results forever, don't cache dns results forever:
 RUN touch $JAVA_HOME/lib/security/java.security && \
