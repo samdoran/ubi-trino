@@ -294,7 +294,8 @@ objects:
       hive.metastore.uri=thrift://hive-metastore:8000
       hive.parquet.use-column-names=true
       hive.s3.path-style-access=true
-      hive.s3.sse.enabled=true
+      hive.s3.sse.enabled=${S3_SSE_ENABLED}
+      hive.s3select-pushdown.enabled=${S3_SELECT_PUSHDOWN_ENABLED}
       hive.storage-format=Parquet
     blackhole.propeties: |-
       connector.name=blackhole
@@ -637,3 +638,13 @@ parameters:
   name: QUERY_MAX_TOTAL_MEMORY_PER_NODE
   value: '2GB'
   required: true
+
+# Trino Hive config
+- description: Whether to use SSE encryption
+  displayName: hive.s3.sse.enabled
+  name: S3_SSE_ENABLED
+  value: 'False'
+- description: Whether to use S3 Pushdown for queries
+  displayName: hive.s3select-pushdown.enabled
+  name: S3_SELECT_PUSHDOWN_ENABLED
+  value: 'False'
