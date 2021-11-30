@@ -64,13 +64,13 @@ COPY --chown=trino:trino default/etc $TRINO_HOME
 
 # https://docs.oracle.com/javase/7/docs/technotes/guides/net/properties.html
 # Java caches dns results forever, don't cache dns results forever:
-RUN touch $JAVA_HOME/lib/security/java.security && \
-    chown 1000:0 $JAVA_HOME/lib/security/java.security && \
-    chmod g+rw $JAVA_HOME/lib/security/java.security && \
-    sed -i '/networkaddress.cache.ttl/d' $JAVA_HOME/lib/security/java.security && \
-    sed -i '/networkaddress.cache.negative.ttl/d' $JAVA_HOME/lib/security/java.security && \
-    echo 'networkaddress.cache.ttl=0' >> $JAVA_HOME/lib/security/java.security && \
-    echo 'networkaddress.cache.negative.ttl=0' >> $JAVA_HOME/lib/security/java.security
+RUN touch $JAVA_HOME/conf/security && \
+    chown 1000:0 $JAVA_HOME/conf/security && \
+    chmod g+rw $JAVA_HOME/conf/security && \
+    sed -i '/networkaddress.cache.ttl/d' $JAVA_HOME/conf/security && \
+    sed -i '/networkaddress.cache.negative.ttl/d' $JAVA_HOME/conf/security && \
+    echo 'networkaddress.cache.ttl=0' >> $JAVA_HOME/conf/security && \
+    echo 'networkaddress.cache.negative.ttl=0' >> $JAVA_HOME/conf/security
 
 RUN chown -R 1000:0 ${HOME} /etc/passwd $(readlink -f ${JAVA_HOME}/lib/security/cacerts) && \
     chmod -R 774 /etc/passwd $(readlink -f ${JAVA_HOME}/lib/security/cacerts) && \
