@@ -3,7 +3,7 @@
 echo "os: $OSTYPE"
 echo "shell: $SHELL"
 export PATH=$PATH:$PWD
-
+set -ex
 # --------------------------------------------
 # Options that must be configured by app owner
 # --------------------------------------------
@@ -19,14 +19,15 @@ IMAGE="${IMAGE_REPO}/${ORG}/${APP}"
 CICD_URL=https://raw.githubusercontent.com/RedHatInsights/bonfire/master/cicd
 curl -s $CICD_URL/bootstrap.sh > .cicd_bootstrap.sh && source .cicd_bootstrap.sh
 
-changed=$(git diff --name-only ^HEAD | egrep "default|bin|Dockerfile|image_build_num.txt")
-if [ -n "$changed" ]; then
+changed=$(git diff-index --name-only HEAD --)
+if [ egrep "$changed" "default|bin|Dockerfile|image_build_num.txt" &>/dev/null ]; then
     source $CICD_ROOT/build.sh
     #source $CICD_ROOT/deploy_ephemeral_env.sh
     #source $CICD_ROOT/smoke_test.sh
 else
     IMAGE_TAG=$(./get_image_tag.sh)
 fi
+
 source $CICD_ROOT/_common_deploy_logic.sh
 export NAMESPACE=$(bonfire namespace reserve)
 oc process --local -f deploy/clowdapp.yaml | oc apply -f - -n $NAMESPACE
