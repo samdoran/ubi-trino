@@ -15,14 +15,25 @@ APP="ubi-trino"
 IMAGE="${IMAGE_REPO}/${ORG}/${APP}"
 COMPONENTS="hive-metastore koku presto"  # specific components to deploy (optional, default: all)
 COMPONENTS_W_RESOURCES="hive-metastore koku presto"  # components which should preserve resource settings (optional, default: none)
+CHANGED_DIR="$WORKSPACE/files_changed"
 
+mkdir -p $CHANGED_DIR
+
+function check_for_file_changes() {
+    if [ -f $CHANGED_DIR/files_changed.txt ]; then
+        egrep "$1" $CHANGED_DIR/files_changed.txt &>/dev/null
+    else
+        null &>/dev/null
+    fi
+}
 
 # Install bonfire repo/initialize
 CICD_URL=https://raw.githubusercontent.com/RedHatInsights/bonfire/master/cicd
 curl -s $CICD_URL/bootstrap.sh > .cicd_bootstrap.sh && source .cicd_bootstrap.sh
 
-changed=$(git diff-index --name-only HEAD --)
-if [ egrep "$changed" "default|bin|Dockerfile|image_build_num.txt" &>/dev/null ]; then
+git diff-index --name-only ^HEAD > $CHANGED_DIR/files_changed.txt
+if check_for_file_changes 'default|bin|Dockerfile|image_build_num.txt'
+then
     source $CICD_ROOT/build.sh
 else
     IMAGE_TAG=$(./get_image_tag.sh)
