@@ -13,6 +13,8 @@ IMAGE_REPO="quay.io"
 ORG="cloudservices"
 APP="ubi-trino"
 IMAGE="${IMAGE_REPO}/${ORG}/${APP}"
+COMPONENTS="hive-metastore koku presto"  # specific components to deploy (optional, default: all)
+COMPONENTS_W_RESOURCES="hive-metastore koku presto"  # components which should preserve resource settings (optional, default: none)
 
 
 # Install bonfire repo/initialize
