@@ -22,16 +22,15 @@ curl -s $CICD_URL/bootstrap.sh > .cicd_bootstrap.sh && source .cicd_bootstrap.sh
 changed=$(git diff-index --name-only HEAD --)
 if [ egrep "$changed" "default|bin|Dockerfile|image_build_num.txt" &>/dev/null ]; then
     source $CICD_ROOT/build.sh
-    #source $CICD_ROOT/deploy_ephemeral_env.sh
-    #source $CICD_ROOT/smoke_test.sh
 else
     IMAGE_TAG=$(./get_image_tag.sh)
 fi
 
-source $CICD_ROOT/_common_deploy_logic.sh
-export NAMESPACE=$(bonfire namespace reserve)
-oc process --local -f deploy/clowdapp.yaml | oc apply -f - -n $NAMESPACE
-
+# source $CICD_ROOT/_common_deploy_logic.sh
+# export NAMESPACE=$(bonfire namespace reserve)
+# oc process --local -f deploy/clowdapp.yaml | oc apply -f - -n $NAMESPACE
+source $CICD_ROOT/deploy_ephemeral_env.sh
+#source $CICD_ROOT/smoke_test.sh
 
 mkdir -p $WORKSPACE/artifacts
 cat << EOF > ${WORKSPACE}/artifacts/junit-dummy.xml
