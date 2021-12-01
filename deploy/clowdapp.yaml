@@ -643,8 +643,8 @@ parameters:
 - description: Whether to use SSE encryption
   displayName: hive.s3.sse.enabled
   name: S3_SSE_ENABLED
-  value: 'False'
+  value: 'True'
 - description: Whether to use S3 Pushdown for queries
   displayName: hive.s3select-pushdown.enabled
   name: S3_SELECT_PUSHDOWN_ENABLED
-  value: 'False'
+  value: 'True'
