@@ -137,7 +137,7 @@ objects:
       exec "$@"
     liveness.sh: |
       #!/bin/bash
-      RESULT=$(trino --server http://localhost:8080 --execute 'SELECT DISTINCT state FROM system.runtime.nodes;' --output-format JSON | jq -r .state)
+      RESULT=$(trino --server ${TRINO_COORDINATOR_SERVICE_HOST}:${TRINO_COORDINATOR_SERVICE_PORT} --execute 'SELECT DISTINCT state FROM system.runtime.nodes;' --output-format JSON | jq -r .state)
       if [[ ${RESULT} -eq 'active' ]]
       then
           return 0
