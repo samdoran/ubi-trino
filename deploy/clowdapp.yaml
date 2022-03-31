@@ -135,6 +135,15 @@ objects:
           fi
       fi
       exec "$@"
+    liveness.sh: |
+      #!/bin/bash
+      RESULT=$(trino --server ${TRINO_COORDINATOR_SERVICE_HOST}:${TRINO_COORDINATOR_SERVICE_PORT} --execute 'SELECT DISTINCT state FROM system.runtime.nodes;' --output-format JSON | jq -r .state)
+      if [[ ${RESULT} -eq 'active' ]]
+      then
+          exit 0
+      else
+          exit 1
+      fi
 - apiVersion: v1
   kind: ConfigMap
   metadata:
@@ -361,13 +370,14 @@ objects:
             cpu: ${COORDINATOR_CPU_REQUEST}
             memory: ${COORDINATOR_MEMORY_REQUEST}
         livenessProbe:
-          failureThreshold: 3
-          tcpSocket:
-            port: 10000
+          exec:
+            command:
+            - /etc/trino/scripts/liveness.sh
           initialDelaySeconds: 60
-          periodSeconds: 10
+          periodSeconds: 60
           successThreshold: 1
-          timeoutSeconds: 5
+          failureThreshold: 3
+          timeoutSeconds: 10
         readinessProbe:
           httpGet:
             path: /v1/info/state
@@ -385,6 +395,9 @@ objects:
               items:
               - key: entrypoint.sh
                 path: entrypoint.sh
+                mode: 509
+              - key: liveness.sh
+                path: liveness.sh
                 mode: 509
           - name: trino-config
             configMap:
@@ -473,16 +486,17 @@ objects:
             cpu: ${WORKER_CPU_REQUEST}
             memory: ${WORKER_MEMORY_REQUEST}
         livenessProbe:
-          failureThreshold: 3
-          tcpSocket:
-            port: 10000
+          exec:
+            command:
+            - /etc/trino/scripts/liveness.sh
           initialDelaySeconds: 60
-          periodSeconds: 10
+          periodSeconds: 60
           successThreshold: 1
-          timeoutSeconds: 3
+          failureThreshold: 3
+          timeoutSeconds: 10
         readinessProbe:
           httpGet:
-            path: /v1/info/state
+            path: /v1/info
             port: 10000
             scheme: HTTP
           initialDelaySeconds: 60
@@ -497,6 +511,9 @@ objects:
               items:
               - key: entrypoint.sh
                 path: entrypoint.sh
+                mode: 509
+              - key: liveness.sh
+                path: liveness.sh
                 mode: 509
           - name: trino-config
             configMap:
