@@ -140,9 +140,9 @@ objects:
       RESULT=$(trino --server ${TRINO_COORDINATOR_SERVICE_HOST}:${TRINO_COORDINATOR_SERVICE_PORT} --execute 'SELECT DISTINCT state FROM system.runtime.nodes;' --output-format JSON | jq -r .state)
       if [[ ${RESULT} -eq 'active' ]]
       then
-          return 0
+          exit 0
       else
-          return -1
+          exit 1
       fi
 - apiVersion: v1
   kind: ConfigMap
