@@ -490,10 +490,10 @@ objects:
             command:
             - /etc/trino/scripts/liveness.sh
           initialDelaySeconds: 60
-          periodSeconds: 60
+          periodSeconds: ${LIVENESS_PROBE_PERIOD}
           successThreshold: 1
           failureThreshold: 5
-          timeoutSeconds: 60
+          timeoutSeconds: ${LIVENESS_PROBE_TIMEOUT}
         readinessProbe:
           httpGet:
             path: /v1/info
@@ -661,3 +661,13 @@ parameters:
   displayName: hive.s3select-pushdown.enabled
   name: S3_SELECT_PUSHDOWN_ENABLED
   value: 'True'
+
+# Probe params
+- description: Liveness probe timeout
+  displayName: livenessTimeoutSeconds
+  name: LIVENESS_PROBE_TIMEOUT
+  value: '120'
+- description: Liveness probe period
+  displayName: livenessPeriodSeconds
+  name: LIVENESS_PROBE_PERIOD
+  value: '120'
