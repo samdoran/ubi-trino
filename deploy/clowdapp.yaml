@@ -490,10 +490,10 @@ objects:
             command:
             - /etc/trino/scripts/liveness.sh
           initialDelaySeconds: 60
-          periodSeconds: ${LIVENESS_PROBE_PERIOD}
+          periodSeconds: ${{LIVENESS_PROBE_PERIOD}}
           successThreshold: 1
           failureThreshold: 5
-          timeoutSeconds: ${LIVENESS_PROBE_TIMEOUT}
+          timeoutSeconds: ${{LIVENESS_PROBE_TIMEOUT}}
         readinessProbe:
           httpGet:
             path: /v1/info
