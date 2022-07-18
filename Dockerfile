@@ -1,6 +1,6 @@
-ARG PROMETHEUS_VERSION=0.16.1
-ARG TRINO_VERSION=375
-ARG UBI_VERSION=8.5
+ARG PROMETHEUS_VERSION=0.17.0
+ARG TRINO_VERSION=390
+ARG UBI_VERSION=8.6
 
 FROM registry.access.redhat.com/ubi8/ubi:${UBI_VERSION} as downloader
 
@@ -43,8 +43,8 @@ RUN \
     # add the Azul RPM repository
     yum install -y https://cdn.azul.com/zulu/bin/zulu-repo-1.0.0-1.noarch.rpm && \
     set -xeu && \
-    INSTALL_PKGS="zulu11-jdk less jq" && \
-    yum install -y $INSTALL_PKGS && \
+    INSTALL_PKGS="zulu17-jdk less jq" && \
+    yum install -y $INSTALL_PKGS --setopt=tsflags=nodocs && \
     yum clean all && \
     rm -rf /var/cache/yum
 
@@ -55,7 +55,7 @@ RUN \
     mkdir -p /usr/lib/trino /data/trino/{data,logs,spill} && \
     chown -R "trino:trino" /usr/lib/trino /data/trino
 
-ENV JAVA_HOME=/usr/lib/jvm/zulu11 \
+ENV JAVA_HOME=/usr/lib/jvm/zulu17 \
     TRINO_HOME=/etc/trino \
     TRINO_HISTORY_FILE=/data/trino/.trino_history
 
@@ -79,6 +79,16 @@ COPY --from=downloader /tmp/jmx_prometheus_javaagent-${PROMETHEUS_VERSION}.jar /
 COPY --from=downloader /tmp/trino-cli-${TRINO_VERSION}-executable.jar /usr/bin/trino
 COPY --from=downloader --chown=trino:trino /tmp/trino-server-${TRINO_VERSION} /usr/lib/trino
 COPY --chown=trino:trino default/etc $TRINO_HOME
+
+###########################
+# Remove all unused plugins
+# Only hive, blackhole, jmx, memory, postgresql, tpcds, and tpch are configured plugins.
+ARG to_delete="/TO_DELETE"
+RUN mkdir ${to_delete} && \
+    mv /usr/lib/trino/plugin/* ${to_delete} && \
+    mv ${to_delete}/{hive,blackhole,jmx,memory,postgresql,tpcds,tpch} /usr/lib/trino/plugin/. && \
+    rm -rf ${to_delete}
+###########################
 
 EXPOSE 10000
 USER trino:trino
