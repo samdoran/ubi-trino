@@ -84,6 +84,9 @@ objects:
         echo "connection-user=${DATABASE_USER}" >> ${TRINO_HOME}/catalog/postgres.properties
         echo "connection-password=${DATABASE_PASSWORD}" >> ${TRINO_HOME}/catalog/postgres.properties
         echo "postgresql.array-mapping=AS_ARRAY" >> ${TRINO_HOME}/catalog/postgres.properties
+        echo "insert.non-transactional-insert.enabled=${NON_TRANSACTIONAL_INSERT}" >> ${TRINO_HOME}/catalog/postgres.properties
+        echo "write.batch-size=${INSERT_BATCH_SIZE}" >> ${TRINO_HOME}/catalog/postgres.properties
+
       fi
       # always add the openshift service-ca.crt if it exists
       if [ -a /var/run/secrets/kubernetes.io/serviceaccount/service-ca.crt ]; then
@@ -695,6 +698,17 @@ parameters:
   displayName: hive.s3select-pushdown.enabled
   name: S3_SELECT_PUSHDOWN_ENABLED
   value: 'True'
+
+# Trino Postgres config
+- description: Number of rows to insert into Postgres.
+  displayName: write.batch-size
+  name: INSERT_BATCH_SIZE
+  value: '10000'
+- description: Whether to use non transactional inserts
+  displayName: insert.non-transactional-insert.enabled
+  name: NON_TRANSACTIONAL_INSERT
+  value: 'True'
+
 
 # Probe params
 - description: Liveness probe timeout
