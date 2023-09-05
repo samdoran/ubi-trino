@@ -502,10 +502,6 @@ objects:
           - name: MAX_HEAP_SIZE
             value: ${MAX_HEAP_SIZE}
         machinePool: ${MACHINE_POOL_OPTION}
-        tolerations:
-          - effect: NoSchedule  
-            key: hccm-trino-node
-            value: 'true'
         resources:
           limits:
             cpu: ${WORKER_CPU_LIMIT}
