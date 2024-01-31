@@ -138,15 +138,6 @@ objects:
           fi
       fi
       exec "$@"
-    liveness.sh: |
-      #!/bin/bash
-      RESULT=$(trino --server ${TRINO_COORDINATOR_SERVICE_HOST}:${TRINO_COORDINATOR_SERVICE_PORT} --execute 'SELECT DISTINCT state FROM system.runtime.nodes;' --output-format JSON | jq -r .state)
-      if [[ ${RESULT} -eq 'active' ]]
-      then
-          exit 0
-      else
-          exit 1
-      fi
 - apiVersion: v1
   kind: ConfigMap
   metadata:
@@ -154,6 +145,8 @@ objects:
     labels:
       app: trino
   data:
+    access-control.properties: |-
+      access-control.name=allow-all
     jvm.config: |-
       -server
       -Xmx${MAX_HEAP_SIZE}
@@ -389,23 +382,22 @@ objects:
             cpu: ${COORDINATOR_CPU_REQUEST}
             memory: ${COORDINATOR_MEMORY_REQUEST}
         livenessProbe:
-          exec:
-            command:
-            - /etc/trino/scripts/liveness.sh
+          httpGet:
+            path: /v1/info
+            port: private
           initialDelaySeconds: 60
           periodSeconds: ${{LIVENESS_PROBE_PERIOD}}
           successThreshold: 1
-          failureThreshold: 5
+          failureThreshold: 6
           timeoutSeconds: ${{LIVENESS_PROBE_TIMEOUT}}
         readinessProbe:
           httpGet:
-            path: /v1/info/state
-            port: 10000
-            scheme: HTTP
+            path: /v1/info
+            port: private
           initialDelaySeconds: 60
           periodSeconds: 10
           successThreshold: 1
-          failureThreshold: 3
+          failureThreshold: 6
           timeoutSeconds: 5
         volumes:
           - name: trino-scripts
@@ -414,9 +406,6 @@ objects:
               items:
               - key: entrypoint.sh
                 path: entrypoint.sh
-                mode: 509
-              - key: liveness.sh
-                path: liveness.sh
                 mode: 509
           - name: trino-config
             configMap:
@@ -511,24 +500,29 @@ objects:
             cpu: ${WORKER_CPU_REQUEST}
             memory: ${WORKER_MEMORY_REQUEST}
         livenessProbe:
-          exec:
-            command:
-            - /etc/trino/scripts/liveness.sh
+          httpGet:
+            path: /v1/info
+            port: private
           initialDelaySeconds: 60
           periodSeconds: ${{LIVENESS_PROBE_PERIOD}}
           successThreshold: 1
-          failureThreshold: 5
+          failureThreshold: 6
           timeoutSeconds: ${{LIVENESS_PROBE_TIMEOUT}}
         readinessProbe:
           httpGet:
             path: /v1/info
-            port: 10000
-            scheme: HTTP
+            port: private
           initialDelaySeconds: 60
           periodSeconds: 10
           successThreshold: 1
-          failureThreshold: 3
-          timeoutSeconds: 3
+          failureThreshold: 6
+          timeoutSeconds: 5
+        terminationGracePeriodSeconds: 3600
+        lifecycle:
+          preStop:
+            exec:
+              command:
+                - /usr/lib/trino/warm-shutdown
         volumes:
           - name: trino-scripts
             configMap:
@@ -536,9 +530,6 @@ objects:
               items:
               - key: entrypoint.sh
                 path: entrypoint.sh
-                mode: 509
-              - key: liveness.sh
-                path: liveness.sh
                 mode: 509
           - name: trino-config
             configMap:
