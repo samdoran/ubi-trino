@@ -9,7 +9,7 @@ metadata:
     pipelinesascode.tekton.dev/on-cel-expression: event == "push" && target_branch == "main"
   creationTimestamp: null
   labels:
-    appstudio.openshift.io/application: hccm
+    appstudio.openshift.io/application: ubi-trino
     appstudio.openshift.io/component: ubi-trino
     pipelines.appstudio.openshift.io/type: build
   name: ubi-trino-on-push
@@ -21,9 +21,9 @@ spec:
     - name: revision
       value: '{{revision}}'
     - name: output-image
-      value: quay.io/redhat-user-workloads/cost-mgmt-dev-tenant/hccm/ubi-trino:{{revision}}
+      value: quay.io/redhat-user-workloads/cost-mgmt-dev-tenant/ubi-trino/ubi-trino:{{revision}}
     - name: dockerfile
-      value: Dockerfile
+      value: /Dockerfile
   pipelineSpec:
     finally:
       - name: show-sbom

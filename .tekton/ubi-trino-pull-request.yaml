@@ -10,7 +10,7 @@ metadata:
     pipelinesascode.tekton.dev/on-cel-expression: event == "pull_request" && target_branch == "main"
   creationTimestamp: null
   labels:
-    appstudio.openshift.io/application: hccm
+    appstudio.openshift.io/application: ubi-trino
     appstudio.openshift.io/component: ubi-trino
     pipelines.appstudio.openshift.io/type: build
   name: ubi-trino-on-pull-request
@@ -22,11 +22,11 @@ spec:
     - name: revision
       value: '{{revision}}'
     - name: output-image
-      value: quay.io/redhat-user-workloads/cost-mgmt-dev-tenant/hccm/ubi-trino:on-pr-{{revision}}
+      value: quay.io/redhat-user-workloads/cost-mgmt-dev-tenant/ubi-trino/ubi-trino:on-pr-{{revision}}
     - name: image-expires-after
       value: 5d
     - name: dockerfile
-      value: Dockerfile
+      value: /Dockerfile
   pipelineSpec:
     finally:
       - name: show-sbom
