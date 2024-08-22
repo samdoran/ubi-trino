@@ -21,9 +21,11 @@ spec:
     - name: revision
       value: '{{revision}}'
     - name: output-image
-      value: quay.io/redhat-user-workloads/cost-mgmt-dev-tenant/ubi-trino/ubi-trino:{{revision}}
+      value: quay.io/redhat-user-workloads/cost-mgmt-dev-tenant/ubi-trino:{{revision}}
     - name: dockerfile
-      value: /Dockerfile
+      value: Dockerfile
+    - name: path-context
+      value: .
   pipelineSpec:
     finally:
       - name: show-sbom
@@ -231,7 +233,7 @@ spec:
             - name: name
               value: buildah
             - name: bundle
-              value: quay.io/konflux-ci/tekton-catalog/task-buildah:0.2@sha256:3f0913dfb85e9aeb9916e412d10329528ddf4c8fba9958cba5291ca8ee247f7e
+              value: quay.io/konflux-ci/tekton-catalog/task-buildah:0.2@sha256:5d052102d97150345e854abfa4e5e753b6a770f82807f3df2e1a15cfa668e690
             - name: kind
               value: task
           resolver: bundles
