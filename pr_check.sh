@@ -16,29 +16,12 @@ IMAGE="${IMAGE_REPO}/${ORG}/${APP}"
 EXTRA_DEPLOY_ARGS="--set-parameter trino/IMAGE=${IMAGE}"
 COMPONENTS="hive-metastore koku trino"  # specific components to deploy (optional, default: all)
 COMPONENTS_W_RESOURCES="hive-metastore koku trino"  # components which should preserve resource settings (optional, default: none)
-CHANGED_DIR="$WORKSPACE/files_changed"
-
-mkdir -p $CHANGED_DIR
-
-function check_for_file_changes() {
-    if [ -f $CHANGED_DIR/files_changed.txt ]; then
-        egrep "$1" $CHANGED_DIR/files_changed.txt &>/dev/null
-    else
-        null &>/dev/null
-    fi
-}
 
 # Install bonfire repo/initialize
 CICD_URL=https://raw.githubusercontent.com/RedHatInsights/bonfire/master/cicd
 curl -s $CICD_URL/bootstrap.sh > .cicd_bootstrap.sh && source .cicd_bootstrap.sh
 
-git diff --name-only origin/main > $CHANGED_DIR/files_changed.txt
-if check_for_file_changes 'default|bin|Dockerfile|image_build_num.txt'
-then
-    source $CICD_ROOT/build.sh
-else
-    IMAGE_TAG=$(./get_image_tag.sh)
-fi
+source $CICD_ROOT/build.sh
 
 # source $CICD_ROOT/_common_deploy_logic.sh
 # export NAMESPACE=$(bonfire namespace reserve)
