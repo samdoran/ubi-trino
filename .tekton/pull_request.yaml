@@ -40,22 +40,16 @@ spec:
     - name: tag-prefix
       value: pr-{{ pull_request_number }}-
 
-  pipelineRef:
-    name: pipeline-build-multiarch
-
-  taskRunSpecs:
-    - pipelineTaskName: clamav-scan
-      stepOverrides:
-        - name: extract-and-scan-image
-          computeResources:
-            requests:
-              cpu: 1500m
-              memory: 4Gi
-
-    - pipelineTaskName: ecosystem-cert-preflight-checks
-      computeResources:
-        requests:
-          memory: 1Gi
+  pipelineSpec:
+    tasks:
+      - name: debug
+        taskSpec:
+          steps:
+            - name: debug
+              image: registry.access.redhat.com/ubi9:latest
+              script: |
+                #!/usr/bin/bash
+                echo -e 'Pull request body:\n\n{{ body.pull_request }}'
 
   timeouts:
     tasks: 2h
