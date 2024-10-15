@@ -31,7 +31,7 @@ spec:
 
   steps:
     - name: use-trusted-artifact
-      image: quay.io/redhat-appstudio/build-trusted-artifacts:latest@sha256:a390d28f69d61ab38aadf78b7c9b21ed09b79687bddae4cf1d02616bef5d7da7
+      image: quay.io/redhat-appstudio/build-trusted-artifacts:latest@sha256:a83c92fc0a1e2c785937c6612dc8c8237818535543f00ecaf6b3b77a35f76259
       args:
         - use
         - $(params.source_artifact)=/var/workdir/source
